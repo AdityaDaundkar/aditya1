@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Guess the Number Game</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f8ff;
+      text-align: center;
+      padding: 50px;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    input[type="number"] {
+      padding: 10px;
+      font-size: 16px;
+      width: 100px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    #message {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .winner {
+      color: green;
+    }
+
+    .loser {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎯 Guess the Number!</h1>
+  <p>Guess a number between 1 and 100</p>
+
+  <input type="number" id="guessInput" min="1" max="100" />
+  <br />
+  <button onclick="checkGuess()">Submit Guess</button>
+  <div id="message"></div>
+
+  <script>
+    const secretNumber = Math.floor(Math.random() * 100) + 1;
+    let attempts = 0;
+
+    function checkGuess() {
+      const userGuess = parseInt(document.getElementById("guessInput").value);
+      const message = document.getElementById("message");
+      attempts++;
+
+      if (isNaN(userGuess) || userGuess < 1 || userGuess > 100) {
+        message.textContent = "⛔ Please enter a number between 1 and 100.";
+        message.className = "loser";
+        return;
+      }
+
+      if (userGuess === secretNumber) {
+        message.textContent = `🎉 Correct! You guessed it in ${attempts} attempts.`;
+        message.className = "winner";
+      } else if (userGuess < secretNumber) {
+        message.textContent = "📉 Too low! Try again.";
+        message.className = "loser";
+      } else {
+        message.textContent = "📈 Too high! Try again.";
+        message.className = "loser";
+      }
+    }
+  </script>
+
+</body>
+</html>
