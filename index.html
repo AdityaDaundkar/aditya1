@@ -2,85 +2,121 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Guess the Number Game</title>
+  <title>Snake Game</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f0f8ff;
-      text-align: center;
-      padding: 50px;
+      background-color: #111;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+    }
+
+    canvas {
+      background-color: #222;
+      border: 2px solid #0f0;
     }
 
     h1 {
-      color: #333;
-    }
-
-    input[type="number"] {
-      padding: 10px;
-      font-size: 16px;
-      width: 100px;
-    }
-
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      margin-top: 10px;
-      cursor: pointer;
-    }
-
-    #message {
-      margin-top: 20px;
-      font-size: 18px;
-      font-weight: bold;
-    }
-
-    .winner {
-      color: green;
-    }
-
-    .loser {
-      color: red;
+      margin-bottom: 20px;
+      color: #0f0;
     }
   </style>
 </head>
 <body>
-
-  <h1>🎯 Guess the Number!</h1>
-  <p>Guess a number between 1 and 100</p>
-
-  <input type="number" id="guessInput" min="1" max="100" />
-  <br />
-  <button onclick="checkGuess()">Submit Guess</button>
-  <div id="message"></div>
+  <h1>🐍 Snake Game</h1>
+  <canvas id="gameCanvas" width="400" height="400"></canvas>
 
   <script>
-    const secretNumber = Math.floor(Math.random() * 100) + 1;
-    let attempts = 0;
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
 
-    function checkGuess() {
-      const userGuess = parseInt(document.getElementById("guessInput").value);
-      const message = document.getElementById("message");
-      attempts++;
+    const gridSize = 20;
+    const tileCount = canvas.width / gridSize;
 
-      if (isNaN(userGuess) || userGuess < 1 || userGuess > 100) {
-        message.textContent = "⛔ Please enter a number between 1 and 100.";
-        message.className = "loser";
+    let snake = [{ x: 10, y: 10 }];
+    let direction = { x: 0, y: 0 };
+    let food = { x: 5, y: 5 };
+    let score = 0;
+
+    function gameLoop() {
+      // Move snake
+      const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
+
+      // Check collision
+      if (
+        head.x < 0 || head.x >= tileCount ||
+        head.y < 0 || head.y >= tileCount ||
+        snake.some(segment => segment.x === head.x && segment.y === head.y)
+      ) {
+        alert("Game Over! Your score: " + score);
+        document.location.reload();
         return;
       }
 
-      if (userGuess === secretNumber) {
-        message.textContent = `🎉 Correct! You guessed it in ${attempts} attempts.`;
-        message.className = "winner";
-      } else if (userGuess < secretNumber) {
-        message.textContent = "📉 Too low! Try again.";
-        message.className = "loser";
-      } else {
-        message.textContent = "📈 Too high! Try again.";
-        message.className = "loser";
-      }
-    }
-  </script>
+      snake.unshift(head);
 
+      // Check food collision
+      if (head.x === food.x && head.y === food.y) {
+        score++;
+        placeFood();
+      } else {
+        snake.pop();
+      }
+
+      drawGame();
+    }
+
+    function drawGame() {
+      // Clear canvas
+      ctx.fillStyle = "#111";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw food
+      ctx.fillStyle = "red";
+      ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize, gridSize);
+
+      // Draw snake
+      ctx.fillStyle = "#0f0";
+      snake.forEach(segment => {
+        ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize, gridSize);
+      });
+
+      // Draw score
+      ctx.fillStyle = "#fff";
+      ctx.font = "16px Arial";
+      ctx.fillText("Score: " + score, 10, 20);
+    }
+
+    function placeFood() {
+      food = {
+        x: Math.floor(Math.random() * tileCount),
+        y: Math.floor(Math.random() * tileCount)
+      };
+    }
+
+    window.addEventListener("keydown", e => {
+      switch (e.key) {
+        case "ArrowUp":
+          if (direction.y === 0) direction = { x: 0, y: -1 };
+          break;
+        case "ArrowDown":
+          if (direction.y === 0) direction = { x: 0, y: 1 };
+          break;
+        case "ArrowLeft":
+          if (direction.x === 0) direction = { x: -1, y: 0 };
+          break;
+        case "ArrowRight":
+          if (direction.x === 0) direction = { x: 1, y: 0 };
+          break;
+      }
+    });
+
+    setInterval(gameLoop, 100);
+  </script>
 </body>
 </html>
