@@ -2,115 +2,140 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Shooting Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>You Are Amazing</title>
   <style>
     body {
       margin: 0;
-      background: #111;
+      padding: 0;
+      background: linear-gradient(to top right, #ff9a9e, #fad0c4);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
       overflow: hidden;
-      font-family: sans-serif;
+      position: relative;
     }
 
-    canvas {
-      display: block;
-      margin: 0 auto;
-      background-color: #222;
-      border: 3px solid lime;
+    h1 {
+      color: white;
+      font-size: 2.5rem;
+      text-align: center;
+      z-index: 2;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
     }
 
-    #score {
+    .heart {
       position: absolute;
-      top: 10px;
-      left: 10px;
-      color: #0f0;
-      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      background-color: red;
+      transform: rotate(45deg);
+      animation: float 10s linear infinite;
+      opacity: 0.7;
+    }
+
+    .heart::before,
+    .heart::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: red;
+      border-radius: 50%;
+    }
+
+    .heart::before {
+      top: -10px;
+      left: 0;
+    }
+
+    .heart::after {
+      left: -10px;
+      top: 0;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(0) rotate(45deg);
+        opacity: 0.7;
+      }
+      100% {
+        transform: translateY(-100vh) rotate(45deg);
+        opacity: 0;
+      }
+    }
+
+    #messageBox {
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    button {
+      background: white;
+      color: #ff6f91;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1rem;
+      border-radius: 30px;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    button:hover {
+      background: #ffe0e9;
+    }
+
+    .popup {
+      font-size: 1.2rem;
+      color: white;
+      margin-top: 20px;
+      animation: fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
-  <div id="score">Score: 0</div>
-  <canvas id="gameCanvas" width="400" height="600"></canvas>
+  <div id="messageBox">
+    <h1>Hey, you! 💖</h1>
+    <p>You are one in a million.</p>
+    <button onclick="showMessage()">Click Me 😊</button>
+    <div id="popupMessage"></div>
+  </div>
 
   <script>
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
-
-    let player = { x: 180, y: 550, width: 40, height: 10 };
-    let bullets = [];
-    let enemies = [];
-    let score = 0;
-
-    function drawPlayer() {
-      ctx.fillStyle = "#0f0";
-      ctx.fillRect(player.x, player.y, player.width, player.height);
+    // Generate hearts
+    for (let i = 0; i < 30; i++) {
+      let heart = document.createElement('div');
+      heart.className = 'heart';
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.animationDuration = (5 + Math.random() * 5) + 's';
+      document.body.appendChild(heart);
     }
 
-    function drawBullets() {
-      ctx.fillStyle = "yellow";
-      bullets.forEach(b => ctx.fillRect(b.x, b.y, 4, 10));
+    function showMessage() {
+      const messages = [
+        "You're the reason I smile 🌸",
+        "You light up the world like no one else ✨",
+        "Just wanted you to know — you're amazing! 💫",
+        "If I had a flower for every time I thought of you... 🌷",
+        "You're not just special — you're unforgettable 💕"
+      ];
+      const popup = document.getElementById("popupMessage");
+      popup.innerHTML = `<div class="popup">${messages[Math.floor(Math.random() * messages.length)]}</div>`;
+
+      // Optional: Play a sound
+      const audio = new Audio("https://www.soundjay.com/button/sounds/button-29.mp3");
+      audio.play();
     }
-
-    function drawEnemies() {
-      ctx.fillStyle = "red";
-      enemies.forEach(e => ctx.fillRect(e.x, e.y, 30, 30));
-    }
-
-    function updateBullets() {
-      bullets = bullets.filter(b => b.y > 0);
-      bullets.forEach(b => b.y -= 5);
-    }
-
-    function updateEnemies() {
-      enemies.forEach(e => e.y += 2);
-      enemies = enemies.filter(e => e.y < canvas.height);
-    }
-
-    function detectCollisions() {
-      bullets.forEach((b, bi) => {
-        enemies.forEach((e, ei) => {
-          if (
-            b.x < e.x + 30 &&
-            b.x + 4 > e.x &&
-            b.y < e.y + 30 &&
-            b.y + 10 > e.y
-          ) {
-            bullets.splice(bi, 1);
-            enemies.splice(ei, 1);
-            score++;
-            document.getElementById("score").textContent = "Score: " + score;
-          }
-        });
-      });
-    }
-
-    function gameLoop() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawPlayer();
-      drawBullets();
-      drawEnemies();
-      updateBullets();
-      updateEnemies();
-      detectCollisions();
-      requestAnimationFrame(gameLoop);
-    }
-
-    function spawnEnemy() {
-      const x = Math.random() * (canvas.width - 30);
-      enemies.push({ x: x, y: -30 });
-    }
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowLeft" && player.x > 0) {
-        player.x -= 10;
-      } else if (e.key === "ArrowRight" && player.x < canvas.width - player.width) {
-        player.x += 10;
-      } else if (e.key === " " || e.key === "ArrowUp") {
-        bullets.push({ x: player.x + player.width / 2 - 2, y: player.y });
-      }
-    });
-
-    setInterval(spawnEnemy, 1000);
-    gameLoop();
   </script>
 </body>
 </html>
