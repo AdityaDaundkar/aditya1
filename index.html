@@ -5,25 +5,70 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>You Are Amazing</title>
   <style>
-    body {
+    * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
+    }
+
+    body {
       background: linear-gradient(to top right, #ff9a9e, #fad0c4);
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
       overflow: hidden;
       position: relative;
+      text-align: center;
+      padding: 20px;
     }
 
     h1 {
       color: white;
       font-size: 2.5rem;
-      text-align: center;
-      z-index: 2;
+      margin-bottom: 10px;
       text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    p {
+      color: white;
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+    }
+
+    button {
+      background: white;
+      color: #ff6f91;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1rem;
+      border-radius: 30px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    button:hover {
+      background: #ffe0e9;
+    }
+
+    #messageBox {
+      max-width: 600px;
+      z-index: 2;
+    }
+
+    .popup {
+      font-size: 1.2rem;
+      color: white;
+      margin-top: 20px;
+      animation: fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .heart {
@@ -67,39 +112,43 @@
       }
     }
 
-    #messageBox {
-      text-align: center;
-      position: relative;
-      z-index: 2;
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      p {
+        font-size: 1rem;
+      }
+
+      button {
+        font-size: 0.95rem;
+        padding: 10px 20px;
+      }
+
+      .popup {
+        font-size: 1rem;
+      }
     }
 
-    button {
-      background: white;
-      color: #ff6f91;
-      border: none;
-      padding: 12px 24px;
-      font-size: 1rem;
-      border-radius: 30px;
-      cursor: pointer;
-      margin-top: 20px;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1.8rem;
+      }
 
-    button:hover {
-      background: #ffe0e9;
-    }
+      p {
+        font-size: 0.95rem;
+      }
 
-    .popup {
-      font-size: 1.2rem;
-      color: white;
-      margin-top: 20px;
-      animation: fadeIn 1s ease;
-    }
+      button {
+        font-size: 0.9rem;
+        padding: 8px 16px;
+      }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      .popup {
+        font-size: 0.95rem;
+      }
     }
   </style>
 </head>
@@ -112,12 +161,13 @@
   </div>
 
   <script>
-    // Generate hearts
+    // Generate floating hearts
     for (let i = 0; i < 30; i++) {
       let heart = document.createElement('div');
       heart.className = 'heart';
       heart.style.left = Math.random() * 100 + 'vw';
       heart.style.animationDuration = (5 + Math.random() * 5) + 's';
+      heart.style.top = Math.random() * 100 + 'vh';
       document.body.appendChild(heart);
     }
 
@@ -132,7 +182,6 @@
       const popup = document.getElementById("popupMessage");
       popup.innerHTML = `<div class="popup">${messages[Math.floor(Math.random() * messages.length)]}</div>`;
 
-      // Optional: Play a sound
       const audio = new Audio("https://www.soundjay.com/button/sounds/button-29.mp3");
       audio.play();
     }
