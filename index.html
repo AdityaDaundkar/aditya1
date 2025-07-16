@@ -3,180 +3,107 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="A sweet little surprise for someone special ❤️">
-  <meta name="author" content="YourName">
-  <title>You Are Amazing</title>
+  <title>Falling Words Typing Game</title>
   <style>
     * {
       box-sizing: border-box;
+    }
+    body {
       margin: 0;
       padding: 0;
-    }
-
-    body {
-      background: linear-gradient(to top right, #ff9a9e, #fad0c4);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
+      background: #111;
+      color: #fff;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      min-height: 100vh;
-      overflow: hidden;
-      padding: 20px;
-      text-align: center;
     }
-
-    #messageBox {
-      max-width: 600px;
-      z-index: 2;
-    }
-
     h1 {
-      font-size: 2.5rem;
-      color: white;
-      margin-bottom: 10px;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+      margin: 20px;
+      color: #0ff;
     }
-
-    p {
-      font-size: 1.2rem;
-      color: white;
-      margin-bottom: 20px;
+    #gameArea {
+      position: relative;
+      width: 600px;
+      height: 400px;
+      border: 2px solid #0ff;
+      background-color: #222;
+      overflow: hidden;
     }
-
-    button {
-      background-color: white;
-      color: #ff6f91;
-      border: none;
-      padding: 12px 24px;
-      font-size: 1rem;
-      border-radius: 30px;
-      cursor: pointer;
-      transition: background 0.3s;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    .word {
+      position: absolute;
+      font-size: 20px;
+      color: #fff;
+      animation: fall 6s linear forwards;
     }
-
-    button:hover {
-      background-color: #ffe0e9;
+    @keyframes fall {
+      to {
+        top: 100%;
+        opacity: 0.5;
+      }
     }
-
-    .popup {
-      font-size: 1.2rem;
-      color: white;
+    #inputArea {
       margin-top: 20px;
-      animation: fadeIn 1s ease;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    input[type="text"] {
+      padding: 10px;
+      font-size: 18px;
+      width: 300px;
     }
-
-    .heart {
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      background-color: red;
-      transform: rotate(45deg);
-      animation: float 10s linear infinite;
-      opacity: 0.7;
-    }
-
-    .heart::before,
-    .heart::after {
-      content: '';
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      background-color: red;
-      border-radius: 50%;
-    }
-
-    .heart::before {
-      top: -10px;
-      left: 0;
-    }
-
-    .heart::after {
-      left: -10px;
-      top: 0;
-    }
-
-    @keyframes float {
-      0% {
-        transform: translateY(0) rotate(45deg);
-        opacity: 0.7;
-      }
-      100% {
-        transform: translateY(-100vh) rotate(45deg);
-        opacity: 0;
-      }
-    }
-
-    /* Responsive styles */
-    @media (max-width: 768px) {
-      h1 {
-        font-size: 2rem;
-      }
-
-      p, .popup {
-        font-size: 1rem;
-      }
-
-      button {
-        padding: 10px 20px;
-        font-size: 0.95rem;
-      }
-    }
-
-    @media (max-width: 480px) {
-      h1 {
-        font-size: 1.8rem;
-      }
-
-      p, .popup {
-        font-size: 0.95rem;
-      }
-
-      button {
-        padding: 8px 16px;
-        font-size: 0.9rem;
-      }
+    #score {
+      margin-top: 10px;
+      font-size: 20px;
     }
   </style>
 </head>
 <body>
-  <div id="messageBox">
-    <h1>Hey, Nikku 💖</h1>
-    <p>You are so much Beautiful and Gorgeous.</p>
-    <button onclick="showMessage()">Click Me 😊</button>
-    <div id="popupMessage"></div>
+  <h1>Falling Words Typing Game</h1>
+  <div id="gameArea"></div>
+  <div id="inputArea">
+    <input type="text" id="wordInput" placeholder="Type word here..." autofocus />
+    <div id="score">Score: 0</div>
   </div>
 
   <script>
-    // Generate hearts
-    for (let i = 0; i < 30; i++) {
-      const heart = document.createElement('div');
-      heart.className = 'heart';
-      heart.style.left = Math.random() * 100 + 'vw';
-      heart.style.top = Math.random() * 100 + 'vh';
-      heart.style.animationDuration = (5 + Math.random() * 5) + 's';
-      document.body.appendChild(heart);
+    const words = ['hello', 'world', 'openai', 'javascript', 'html', 'css', 'code', 'game', 'fast', 'type', 'speed', 'logic', 'focus', 'drop', 'keyboard'];
+    const gameArea = document.getElementById('gameArea');
+    const input = document.getElementById('wordInput');
+    const scoreDisplay = document.getElementById('score');
+    let score = 0;
+
+    function createWord() {
+      const word = words[Math.floor(Math.random() * words.length)];
+      const span = document.createElement('span');
+      span.textContent = word;
+      span.classList.add('word');
+      span.style.left = Math.random() * (gameArea.offsetWidth - 100) + 'px';
+      span.style.top = '-30px';
+      gameArea.appendChild(span);
+
+      setTimeout(() => {
+        if (gameArea.contains(span)) {
+          gameArea.removeChild(span);
+        }
+      }, 6000);
     }
 
-    function showMessage() {
-      const messages = [
-        "You're the reason I smile 🌸",
-        "You light up the world like no one else ✨",
-        "Just wanted you to know — you're amazing! 💫",
-        "If I had a flower for every time I thought of you... 🌷",
-        "You're not just special — you're unforgettable 💕"
-      ];
-      const popup = document.getElementById("popupMessage");
-      popup.innerHTML = `<div class="popup">${messages[Math.floor(Math.random() * messages.length)]}</div>`;
+    function checkInput() {
+      const typed = input.value.trim().toLowerCase();
+      const wordElements = document.querySelectorAll('.word');
 
-      const audio = new Audio("https://www.soundjay.com/button/sounds/button-29.mp3");
-      audio.play();
+      wordElements.forEach((wordEl) => {
+        if (wordEl.textContent === typed) {
+          score++;
+          scoreDisplay.textContent = `Score: ${score}`;
+          gameArea.removeChild(wordEl);
+          input.value = '';
+        }
+      });
     }
+
+    input.addEventListener('input', checkInput);
+
+    setInterval(createWord, 1500); // New word every 1.5s
   </script>
 </body>
 </html>
